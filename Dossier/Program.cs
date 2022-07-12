@@ -18,7 +18,7 @@ namespace sorting
 
             while (isWorking)
             {
-                Console.WriteLine("\nВыберите соответствующую цифру на клавиатуре: 1 - Добавить досье. 2 - Вывести все досье. " +
+                Console.WriteLine("\nВыберите соответствующую цифру на клавиатуре:\n1 - Добавить досье. 2 - Вывести все досье. " +
                     "3 - удалить досье. 4 - поиск по фамилии. 5 - выход\n");
                 ConsoleKeyInfo choosenMenu = Console.ReadKey(true);
 
@@ -46,13 +46,39 @@ namespace sorting
                         break;
                     case ConsoleKey.D2:
                         WriteArrays(fullNameArray, employeePositionArray, fullNameArray.GetLength(0));
-                        Console.WriteLine("Для продолжения нажмите любую клавишу...");
+                        Console.WriteLine("\nДля продолжения нажмите любую клавишу...");
                         Console.ReadKey(true);
                         break;
                     case ConsoleKey.D3:
+                        int decreaseArray = -1;
+                        int isDelete = 1;
                         string surnameSearchForDelete = ReadText("Укажите Фамилию, чье досье необходимо удалить: ");
                         int indexSurnameForDelete = Search(surnameSearchForDelete, fullNameArray, surnameColumnNumber);
-                        EditArrays(ref fullNameArray, ref employeePositionArray, indexSurnameForDelete, -1);
+
+                        if (indexSurnameForDelete >= 0)
+                        {
+                            Console.Write("\nВы пытаетесь удалить досье №");
+                            WriteArrays(fullNameArray, employeePositionArray, indexSurnameForDelete + 1, indexSurnameForDelete, surnameColumnNumber);
+                            Console.WriteLine("\n1 - Подтвердить удаление. 0 - Отменить удаление.");
+                            ConsoleKeyInfo choosenConfirmationMenu = Console.ReadKey(true);
+
+                            switch (choosenConfirmationMenu.Key)
+                            {
+                                case ConsoleKey.D1:
+                                    EditArrays(ref fullNameArray, ref employeePositionArray, indexSurnameForDelete, decreaseArray, isDelete);
+                                    StyleOfSystemMessage("Данные успешно удалены. Для продолжения нажмите любую клавишу...", ConsoleColor.Green);
+                                    Console.ReadKey(true);
+                                    break;
+                                default:
+                                    StyleOfSystemMessage("Удаление отменено.");
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            StyleOfSystemMessage("Такой фамилии не найдено.");
+                        }
+                        
                         break;
                     case ConsoleKey.D4:
                         string surnameSearch = ReadText("Введите фамилию для поиска досье: ");
@@ -64,14 +90,18 @@ namespace sorting
                         }
                         else
                         {
-                            StyleOfSystemMessage("Такой фамилии не найдено.");
+                            StyleOfSystemMessage("Извините, такой фамилии не найдено.");
                         }
 
-                        Console.WriteLine("Для продолжения нажмите любую клавишу...");
+                        Console.WriteLine("\nДля продолжения нажмите любую клавишу...");
                         Console.ReadKey(true);
                         break;
                     case ConsoleKey.D5:
                         isWorking = false;
+                        break;
+                    default:
+                        int cursorPosition = Console.CursorTop - 4;
+                        Console.SetCursorPosition(0, cursorPosition);
                         break;
                 }
             }
@@ -100,12 +130,12 @@ namespace sorting
 
             return value;
         }
-        static void EditArrays(ref string[,] arrayName, ref string[] arrayEmployee, int indexForDelete = int.MaxValue, int addLines = 1)
+        static void EditArrays(ref string[,] arrayName, ref string[] arrayEmployee, int indexForDelete = int.MaxValue, int addLines = 1, int isDelete = 0)
         {
             string[,] tempFullName = new string[arrayName.GetLength(0) + addLines, arrayName.GetLength(1)];
             string[] tempEmployeeArray = new string[arrayEmployee.Length + addLines];
 
-            for (int i = 0; i < arrayName.GetLength(0); i++)
+            for (int i = 0; i < arrayName.GetLength(0) - isDelete; i++)
             {
                 if (i < indexForDelete)
                 {
