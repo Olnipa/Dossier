@@ -6,10 +6,7 @@ namespace sorting
     {
         static void Main(string[] args)
         {
-            string[,] fullNameArray = new string[3, 3] { 
-                { "Петров", "Михаил", "Евгеньевич" }, 
-                { "Васильев", "Евгений", "Иванович" }, 
-                { "Дроздов", "Николай", "Петрович" } };
+            string[] fullNameArray = new string[3] { "Петров Михаил Евгеньевич", "Васильев Евгений Иванович", "Дроздов Николай Петрович"};
             bool isWorking = true;
             string[] employeePositionArray = new string[3] { "Менеджер", "Сантехник", "Зоолог" };
             int surnameColumnNumber = 0;
@@ -19,82 +16,60 @@ namespace sorting
             while (isWorking)
             {
                 Console.WriteLine("\nВыберите соответствующую цифру на клавиатуре:\n1 - Добавить досье. 2 - Вывести все досье. " +
-                    "3 - удалить досье. 4 - поиск по фамилии. 5 - выход\n");
+                    "3 - Удалить досье. 4 - Поиск досье по фамилии. 5 - Выход\n");
                 ConsoleKeyInfo choosenMenu = Console.ReadKey(true);
 
                 switch (choosenMenu.Key)
                 {
                     case ConsoleKey.D1:
-                        string surname = "";
-                        string name = "";
-                        string middleName = "";
-                        string employeePosition = "";
-
-                        surname = ReadText("Введите Фамилию: ");
-                        name = ReadText("Введите Имя: ");
-                        middleName = ReadText("Введите Отчество: ");
-                        employeePosition = ReadText("Введите должность: ");
-
-                        EditArrays(ref fullNameArray, ref employeePositionArray);
-
-                        fullNameArray[fullNameArray.GetLength(0) - 1, surnameColumnNumber] = surname;
-                        fullNameArray[fullNameArray.GetLength(0) - 1, nameColumnNumber] = name;
-                        fullNameArray[fullNameArray.GetLength(0) - 1, middleColumnNumber] = middleName;
-                        employeePositionArray[employeePositionArray.Length - 1] = employeePosition;
-                        StyleOfSystemMessage("Данные успешно внесены. Для продолжения нажмите любую клавишу...", ConsoleColor.Green);
-                        Console.ReadKey(true);
+                        AddDossier(ref fullNameArray, ref employeePositionArray);
                         break;
                     case ConsoleKey.D2:
-                        WriteArrays(fullNameArray, employeePositionArray, fullNameArray.GetLength(0));
-                        Console.WriteLine("\nДля продолжения нажмите любую клавишу...");
-                        Console.ReadKey(true);
+                        WriteArrays(fullNameArray, employeePositionArray, fullNameArray.Length);
                         break;
-                    case ConsoleKey.D3:
-                        int decreaseArray = -1;
-                        int isDelete = 1;
-                        string surnameSearchForDelete = ReadText("Укажите Фамилию, чье досье необходимо удалить: ");
-                        int indexSurnameForDelete = Search(surnameSearchForDelete, fullNameArray, surnameColumnNumber);
+                    //case ConsoleKey.D3:
+                    //    int decreaseArray = -1;
+                    //    int isDelete = 1;
+                    //    string surnameSearchForDelete = ReadText("Укажите Фамилию, чье досье необходимо удалить: ");
+                    //    int indexSurnameForDelete = Search(surnameSearchForDelete, fullNameArray, surnameColumnNumber);
 
-                        if (indexSurnameForDelete >= 0)
+                    //    if (indexSurnameForDelete >= 0)
+                    //    {
+                    //        Console.Write("\nВы пытаетесь удалить досье №");
+                    //        WriteArrays(fullNameArray, employeePositionArray, indexSurnameForDelete + 1, indexSurnameForDelete, surnameColumnNumber);
+                    //        Console.WriteLine("\n1 - Подтвердить удаление. 0 - Отменить удаление.");
+                    //        ConsoleKeyInfo choosenConfirmationMenu = Console.ReadKey(true);
+
+                    //        switch (choosenConfirmationMenu.Key)
+                    //        {
+                    //            case ConsoleKey.D1:
+                    //                EditArrays(ref fullNameArray, ref employeePositionArray, indexSurnameForDelete, decreaseArray, isDelete);
+                    //                StyleOfSystemMessage("Данные успешно удалены. Для продолжения нажмите любую клавишу...", ConsoleColor.Green);
+                    //                Console.ReadKey(true);
+                    //                break;
+                    //            default:
+                    //                StyleOfSystemMessage("Удаление отменено.");
+                    //                break;
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        StyleOfSystemMessage("Такой фамилии не найдено.");
+                    //    }
+
+                    //    break;
+                    case ConsoleKey.D4:
+                        int indexSearchSurname = Search(fullNameArray);
+
+                        if (indexSearchSurname >= 0)
                         {
-                            Console.Write("\nВы пытаетесь удалить досье №");
-                            WriteArrays(fullNameArray, employeePositionArray, indexSurnameForDelete + 1, indexSurnameForDelete, surnameColumnNumber);
-                            Console.WriteLine("\n1 - Подтвердить удаление. 0 - Отменить удаление.");
-                            ConsoleKeyInfo choosenConfirmationMenu = Console.ReadKey(true);
-
-                            switch (choosenConfirmationMenu.Key)
-                            {
-                                case ConsoleKey.D1:
-                                    EditArrays(ref fullNameArray, ref employeePositionArray, indexSurnameForDelete, decreaseArray, isDelete);
-                                    StyleOfSystemMessage("Данные успешно удалены. Для продолжения нажмите любую клавишу...", ConsoleColor.Green);
-                                    Console.ReadKey(true);
-                                    break;
-                                default:
-                                    StyleOfSystemMessage("Удаление отменено.");
-                                    break;
-                            }
+                            WriteArrays(fullNameArray, employeePositionArray, indexSearchSurname + 1, indexSearchSurname);
                         }
                         else
                         {
                             StyleOfSystemMessage("Такой фамилии не найдено.");
                         }
-                        
-                        break;
-                    case ConsoleKey.D4:
-                        string surnameSearch = ReadText("Введите фамилию для поиска досье: ");
-                        int indexSearchSurname = Search(surnameSearch, fullNameArray, surnameColumnNumber);
-                        
-                        if (indexSearchSurname >= 0)
-                        {
-                            WriteArrays(fullNameArray, employeePositionArray, indexSearchSurname + 1, indexSearchSurname, surnameColumnNumber);
-                        }
-                        else
-                        {
-                            StyleOfSystemMessage("Извините, такой фамилии не найдено.");
-                        }
 
-                        Console.WriteLine("\nДля продолжения нажмите любую клавишу...");
-                        Console.ReadKey(true);
                         break;
                     case ConsoleKey.D5:
                         isWorking = false;
@@ -106,6 +81,7 @@ namespace sorting
                 }
             }
         }
+        static void SearchBySurname(string[] fullNameArray, string[] employeePositionArray, );
         static void StyleOfSystemMessage(string error, ConsoleColor color = ConsoleColor.Red)
         {
             ConsoleColor defaultColor = Console.ForegroundColor;
@@ -130,59 +106,45 @@ namespace sorting
 
             return value;
         }
-        static void EditArrays(ref string[,] arrayName, ref string[] arrayEmployee, int indexForDelete = int.MaxValue, int addLines = 1, int isDelete = 0)
+        static void EditArrays(ref string[] array, int indexForDelete = int.MaxValue, int addLines = 1, int isDelete = 0)
         {
-            string[,] tempFullName = new string[arrayName.GetLength(0) + addLines, arrayName.GetLength(1)];
-            string[] tempEmployeeArray = new string[arrayEmployee.Length + addLines];
+            string[] tempArray = new string[array.Length + addLines];
 
-            for (int i = 0; i < arrayName.GetLength(0) - isDelete; i++)
+            for (int i = 0; i < array.GetLength(0) - isDelete; i++)
             {
                 if (i < indexForDelete)
                 {
-                    tempEmployeeArray[i] = arrayEmployee[i];
+                    tempArray[i] = array[i];
                 }
                 else
                 {
-                    tempEmployeeArray[i] = arrayEmployee[i + 1];
-                }
-
-                for (int j = 0; j < arrayName.GetLength(1); j++)
-                {
-                    if (i < indexForDelete)
-                    {
-                        tempFullName[i, j] = arrayName[i, j];
-                    }
-                    else
-                    {
-                        tempFullName[i, j] = arrayName[i + 1, j];
-                    }
+                    tempArray[i] = array[i + 1];
                 }
             }
 
-            arrayName = tempFullName;
-            arrayEmployee = tempEmployeeArray;
+            array = tempArray;
         }
-        static void WriteArrays(string[,] fullName, string[] employeePositionArray, int maxLines, int x = 0, int y = 0)
+        static void WriteArrays(string[] fullName, string[] employeePositionArray, int maxCycles, int x = 0)
         {
-            for (int i = x; i < maxLines; i++)
+            for (int i = x; i < maxCycles; i++)
             {
                 Console.Write(i + 1 + ". ");
-
-                for (int j = y; j < fullName.GetLength(1); j++)
-                {
-                    Console.Write(fullName[i, j] + " ");
-                }
-
-                Console.WriteLine("- " + employeePositionArray[i]);
+                Console.Write(fullName[i]);
+                Console.WriteLine(" - " + employeePositionArray[i]);
             }
+            Console.WriteLine("\nДля продолжения нажмите любую клавишу...");
+            Console.ReadKey(true);
         }
-        static int Search(string value, string[,] fullName, int position)
+        static int Search(string[] fullName, int surnameIndex = 0)
         {
             int index = -1;
-
-            for (int i = 0; i < fullName.GetLength(0); i++)
+            string surnameSearch = ReadText("Введите фамилию для поиска досье: ");
+            
+            for (int i = 0; i < fullName.Length; i++)
             {
-                if (fullName[i, position].ToLower() == value.ToLower())
+                string[] separateWords = fullName[i].Split(' ');
+
+                if (separateWords[surnameIndex].ToLower() == surnameSearch.ToLower())
                 {
                     index = i;
                     break;
@@ -190,6 +152,21 @@ namespace sorting
             }
 
             return index;
+        }
+        static void AddDossier(ref string[] fullNameArray, ref string[] employeePositionArray)
+        {
+            string fullName = "";
+            string employeePosition = "";
+
+            fullName = ReadText("Введите Фамилию, Имя и Отчество последовательно, через пробел: ");
+            employeePosition = ReadText("Введите должность: ");
+            EditArrays(ref fullNameArray);
+            EditArrays(ref employeePositionArray);
+
+            fullNameArray[fullNameArray.Length - 1] = fullName;
+            employeePositionArray[employeePositionArray.Length - 1] = employeePosition;
+            StyleOfSystemMessage("Данные успешно внесены. Для продолжения нажмите любую клавишу...", ConsoleColor.Green);
+            Console.ReadKey(true);
         }
     }
 }
