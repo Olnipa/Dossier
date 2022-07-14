@@ -9,9 +9,6 @@ namespace sorting
             string[] fullNameArray = new string[3] { "Петров Михаил Евгеньевич", "Васильев Евгений Иванович", "Дроздов Николай Петрович"};
             bool isWorking = true;
             string[] employeePositionArray = new string[3] { "Менеджер", "Сантехник", "Зоолог" };
-            int surnameColumnNumber = 0;
-            int nameColumnNumber = 1;
-            int middleColumnNumber = 2;
 
             while (isWorking)
             {
@@ -25,51 +22,13 @@ namespace sorting
                         AddDossier(ref fullNameArray, ref employeePositionArray);
                         break;
                     case ConsoleKey.D2:
-                        WriteArrays(fullNameArray, employeePositionArray, fullNameArray.Length);
+                        WriteArray(fullNameArray, employeePositionArray, fullNameArray.Length);
                         break;
-                    //case ConsoleKey.D3:
-                    //    int decreaseArray = -1;
-                    //    int isDelete = 1;
-                    //    string surnameSearchForDelete = ReadText("Укажите Фамилию, чье досье необходимо удалить: ");
-                    //    int indexSurnameForDelete = Search(surnameSearchForDelete, fullNameArray, surnameColumnNumber);
-
-                    //    if (indexSurnameForDelete >= 0)
-                    //    {
-                    //        Console.Write("\nВы пытаетесь удалить досье №");
-                    //        WriteArrays(fullNameArray, employeePositionArray, indexSurnameForDelete + 1, indexSurnameForDelete, surnameColumnNumber);
-                    //        Console.WriteLine("\n1 - Подтвердить удаление. 0 - Отменить удаление.");
-                    //        ConsoleKeyInfo choosenConfirmationMenu = Console.ReadKey(true);
-
-                    //        switch (choosenConfirmationMenu.Key)
-                    //        {
-                    //            case ConsoleKey.D1:
-                    //                EditArrays(ref fullNameArray, ref employeePositionArray, indexSurnameForDelete, decreaseArray, isDelete);
-                    //                StyleOfSystemMessage("Данные успешно удалены. Для продолжения нажмите любую клавишу...", ConsoleColor.Green);
-                    //                Console.ReadKey(true);
-                    //                break;
-                    //            default:
-                    //                StyleOfSystemMessage("Удаление отменено.");
-                    //                break;
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-                    //        StyleOfSystemMessage("Такой фамилии не найдено.");
-                    //    }
-
-                    //    break;
+                    case ConsoleKey.D3:
+                        DeleteDossier(ref fullNameArray, ref employeePositionArray) ;
+                        break;
                     case ConsoleKey.D4:
-                        int indexSearchSurname = Search(fullNameArray);
-
-                        if (indexSearchSurname >= 0)
-                        {
-                            WriteArrays(fullNameArray, employeePositionArray, indexSearchSurname + 1, indexSearchSurname);
-                        }
-                        else
-                        {
-                            StyleOfSystemMessage("Такой фамилии не найдено.");
-                        }
-
+                        SearchBySurname(fullNameArray, employeePositionArray);                       
                         break;
                     case ConsoleKey.D5:
                         isWorking = false;
@@ -81,7 +40,83 @@ namespace sorting
                 }
             }
         }
-        static void SearchBySurname(string[] fullNameArray, string[] employeePositionArray, );
+        static void DeleteDossier(ref string[] fullNameArray, ref string[] employeePositionArray)
+        {
+            int decreaseArray = -1;
+            int isDelete = 1;
+            int indexSurnameForDelete = SearchIndex(fullNameArray, "Укажите Фамилию, чье досье необходимо удалить: ");
+
+            if (indexSurnameForDelete >= 0)
+            {
+                Console.Write("\nВы пытаетесь удалить досье №");
+                WriteArray(fullNameArray, employeePositionArray, indexSurnameForDelete + 1, indexSurnameForDelete, "\n1 - Подтвердить удаление. 0 - Отменить удаление.");
+                ConsoleKeyInfo choosenConfirmationMenu = Console.ReadKey(true);
+
+                switch (choosenConfirmationMenu.Key)
+                {
+                    case ConsoleKey.D1:
+                        EditArrays(ref fullNameArray, indexSurnameForDelete, decreaseArray, isDelete);
+                        EditArrays(ref employeePositionArray, indexSurnameForDelete, decreaseArray, isDelete);
+                        StyleOfSystemMessage("Данные успешно удалены. Для продолжения нажмите любую клавишу...", ConsoleColor.Green);
+                        Console.ReadKey(true);
+                        break;
+                    default:
+                        StyleOfSystemMessage("Удаление отменено.");
+                        break;
+                }
+            }
+            else
+            {
+                StyleOfSystemMessage("Такой фамилии не найдено.");
+            }
+        }
+        static void SearchBySurname(string[] fullNameArray, string[] employeePositionArray)
+        {
+            int indexSearchSurname = SearchIndex(fullNameArray);
+
+            if (indexSearchSurname >= 0)
+            {
+                Console.WriteLine();
+                WriteArray(fullNameArray, employeePositionArray, indexSearchSurname + 1, indexSearchSurname);
+            }
+            else
+            {
+                StyleOfSystemMessage("Такой фамилии не найдено.");
+            }
+        }
+        static void AddDossier(ref string[] fullNameArray, ref string[] employeePositionArray)
+        {
+            string fullName = "";
+            string employeePosition = "";
+
+            fullName = ReadText("Введите Фамилию, Имя и Отчество последовательно, через пробел: ");
+            employeePosition = ReadText("Введите должность: ");
+            EditArrays(ref fullNameArray);
+            EditArrays(ref employeePositionArray);
+
+            fullNameArray[fullNameArray.Length - 1] = fullName;
+            employeePositionArray[employeePositionArray.Length - 1] = employeePosition;
+            StyleOfSystemMessage("Данные успешно внесены. Для продолжения нажмите любую клавишу...", ConsoleColor.Green);
+            Console.ReadKey(true);
+        }
+        static int SearchIndex(string[] fullName, string text = "Введите фамилию для поиска досье: ", int surnameIndex = 0)
+        {
+            int index = -1;
+            string surnameSearch = ReadText(text);
+
+            for (int i = 0; i < fullName.Length; i++)
+            {
+                string[] separateWords = fullName[i].Split(' ');
+
+                if (separateWords[surnameIndex].ToLower() == surnameSearch.ToLower())
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            return index;
+        }
         static void StyleOfSystemMessage(string error, ConsoleColor color = ConsoleColor.Red)
         {
             ConsoleColor defaultColor = Console.ForegroundColor;
@@ -124,7 +159,7 @@ namespace sorting
 
             array = tempArray;
         }
-        static void WriteArrays(string[] fullName, string[] employeePositionArray, int maxCycles, int x = 0)
+        static void WriteArray(string[] fullName, string[] employeePositionArray, int maxCycles, int x = 0, string text = "\nДля продолжения нажмите любую клавишу...")
         {
             for (int i = x; i < maxCycles; i++)
             {
@@ -132,41 +167,12 @@ namespace sorting
                 Console.Write(fullName[i]);
                 Console.WriteLine(" - " + employeePositionArray[i]);
             }
-            Console.WriteLine("\nДля продолжения нажмите любую клавишу...");
-            Console.ReadKey(true);
-        }
-        static int Search(string[] fullName, int surnameIndex = 0)
-        {
-            int index = -1;
-            string surnameSearch = ReadText("Введите фамилию для поиска досье: ");
-            
-            for (int i = 0; i < fullName.Length; i++)
+            Console.WriteLine(text);
+
+            if (text == "\nДля продолжения нажмите любую клавишу...")
             {
-                string[] separateWords = fullName[i].Split(' ');
-
-                if (separateWords[surnameIndex].ToLower() == surnameSearch.ToLower())
-                {
-                    index = i;
-                    break;
-                }
+                Console.ReadKey(true);
             }
-
-            return index;
-        }
-        static void AddDossier(ref string[] fullNameArray, ref string[] employeePositionArray)
-        {
-            string fullName = "";
-            string employeePosition = "";
-
-            fullName = ReadText("Введите Фамилию, Имя и Отчество последовательно, через пробел: ");
-            employeePosition = ReadText("Введите должность: ");
-            EditArrays(ref fullNameArray);
-            EditArrays(ref employeePositionArray);
-
-            fullNameArray[fullNameArray.Length - 1] = fullName;
-            employeePositionArray[employeePositionArray.Length - 1] = employeePosition;
-            StyleOfSystemMessage("Данные успешно внесены. Для продолжения нажмите любую клавишу...", ConsoleColor.Green);
-            Console.ReadKey(true);
-        }
+         }
     }
 }
